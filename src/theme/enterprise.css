@@ -1,0 +1,83 @@
+/* Horizon Enterprise — design tokens (from IMS base project) */
+:root {
+  --primary: #1e4a7a;
+  --primary-hover: #00335f;
+  --primary-light: #d3e3ff;
+  --primary-lighter: #eef4fa;
+  --accent: #0660a7;
+  --secondary: #226db4;
+
+  --navy-dark: #0f2d4a;
+  --navy-mid: #1a3a5c;
+  --navy: #1e4a7a;
+  --navy-light: #72b1fd;
+
+  --danger: #d93025;
+  --danger-hover: #ba1a1a;
+  --success: #089949;
+  --warning: #e37400;
+
+  --orange: #e37400;
+  --orange-hover: #c26400;
+  --orange-light: #fef3e8;
+
+  --magenta: #c2327a;
+  --magenta-light: #fce7f3;
+
+  --bg: #e8eef4;
+  --bg-tint: #eef4fa;
+  --sidebar-bg: linear-gradient(180deg, #0f2d4a 0%, #1a3a5c 100%);
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-text: rgba(255, 255, 255, 0.72);
+  --sidebar-text-active: #ffffff;
+  --surface: #ffffff;
+  --border: #d8dee6;
+  --border-dark: #c3c6d0;
+
+  --text: #161c21;
+  --text-secondary: #42474f;
+  --text-muted: #737780;
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.04);
+  --shadow: 0 2px 4px rgb(0 0 0 / 0.05);
+  --shadow-md: 0 2px 4px rgb(0 0 0 / 0.05), 0 8px 16px rgb(0 0 0 / 0.05);
+  --shadow-lg: 0 4px 12px rgb(0 0 0 / 0.08);
+
+  --radius: 4px;
+  --radius-sm: 4px;
+  --radius-lg: 6px;
+  --transition: 150ms ease;
+
+  --sidebar-width: 220px;
+  --sidebar-collapsed: 64px;
+  --topbar-height: 44px;
+
+  --font-family: "Inter", system-ui, sans-serif;
+  --font-size-base: 13px;
+  --font-size-sm: 12px;
+  --font-size-xs: 11px;
+
+  --field-view-bg: #e6f1fc;
+  --field-view-label-bg: #dceaf7;
+  --field-view-border: #b8cfe4;
+  --field-view-text: #1a4572;
+}
+
+::selection {
+  background: rgba(30, 74, 122, 0.15);
+  color: var(--text);
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 10px;
+}

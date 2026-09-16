@@ -1,0 +1,107 @@
+.login-field span,
+.login-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+
+.login-field__control {
+  width: 100%;
+  height: 42px;
+  padding: 0 13px;
+  border-radius: 10px;
+  font-size: 13px;
+  outline: none;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.login-field__control:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(30, 74, 122, 0.1);
+}
+
+.login-field__password {
+  position: relative;
+}
+
+.login-field__password .login-field__control {
+  padding-right: 42px;
+}
+
+.login-field__toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: none;
+  cursor: pointer;
+  display: flex;
+  padding: 4px;
+  color: var(--text-muted);
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.login-form__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.login-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 42px;
+  margin-top: 14px;
+  border: none;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #fff;
+  transition: all 0.2s ease;
+}
+
+.login-submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.login-submit:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.login-submit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.login-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: color var(--transition);
+}
+
+.login-back-link:hover {
+  color: var(--primary);
+}

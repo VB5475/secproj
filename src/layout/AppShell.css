@@ -1,0 +1,1008 @@
+.ent-shell {
+  display: flex;
+  /* 100vh on mobile is the layout viewport (includes the address bar's
+     collapsed height), which is routinely taller than what's actually
+     visible on load. Since nothing here scrolls (overflow: hidden), that
+     mismatch clips whatever sits near the bottom of the flex column — the
+     grid section and the ActionBar. 100dvh tracks the real visible
+     viewport; the 100vh line stays first as a fallback for browsers
+     without dvh support. */
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100vh;
+  max-height: 100dvh;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.ent-sidebar {
+  width: var(--sidebar-width);
+  background: var(--sidebar-bg);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 100;
+  box-shadow: var(--shadow-md);
+  transition: width var(--transition);
+  /* Light text on the sidebar's dark navy background is the classic case
+     where the browser's default subpixel antialiasing reads as soft/blurry
+     rather than crisp — switching to grayscale antialiasing (the standard
+     fix for light-on-dark text) noticeably sharpens it without changing the
+     typeface or weight itself. Scoped to the sidebar only, not the app. */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+.ent-shell--collapsed .ent-sidebar {
+  width: var(--sidebar-collapsed);
+}
+
+.ent-sidebar__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 20px 12px 12px;
+  gap: 8px;
+}
+
+/* Collapsed rail is only 64px wide — the brand logo (32px) and the toggle
+   button (26px) can't sit side-by-side without overlapping/clipping. Stack
+   them instead. */
+.ent-shell--collapsed .ent-sidebar__header {
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 16px 0 12px;
+}
+
+.ent-sidebar__brand {
+  display: flex;
+  /* Centered, not flex-start — the brand text is a single "IMS" line now
+     (no tagline), so top-aligning it against the 32px logo box left it
+     sitting noticeably above center (user-reported 2026-07-30). */
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+}
+
+.ent-sidebar__brand:hover .ent-sidebar__name {
+  color: #fff;
+}
+
+.ent-sidebar__search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 30px;
+  margin: 0 12px 12px;
+  padding: 0 10px 0 30px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-sm);
+  color: rgba(255, 255, 255, 0.5);
+  flex-shrink: 0;
+}
+
+.ent-sidebar__search svg:first-child {
+  position: absolute;
+  left: 10px;
+  pointer-events: none;
+}
+
+.ent-sidebar__search input {
+  border: none;
+  background: transparent;
+  outline: none;
+  color: var(--sidebar-text-active);
+  font-size: 12px;
+  width: 100%;
+}
+
+.ent-sidebar__search input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.ent-sidebar__search-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 2px;
+}
+
+.ent-sidebar__search-clear:hover {
+  color: #fff;
+}
+
+.ent-sidebar__search-empty {
+  padding: 12px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  text-align: center;
+}
+
+/* Collapsed icon-rail flyout — portal-rendered (see search-select.css's
+   --portal dropdown for the same fixed-position-via-getBoundingClientRect
+   pattern). Shows a section's full labeled item list on hover since the
+   rail itself has no room for labels or grouping. */
+.ent-sidebar__flyout {
+  min-width: 220px;
+  max-width: 300px;
+  background: var(--sidebar-bg);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+  padding: 8px;
+  /* Portal-rendered outside .ent-sidebar, so it doesn't inherit that rule's
+     font-smoothing fix — same dark-navy/light-text combo needs it here too. */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  /* max-height + overflowY are set inline per-open (openFlyout) from the
+     actual space available below the hover point — this is just the
+     fallback/scrollbar styling. */
+  overflow-y: auto;
+}
+
+.ent-sidebar__flyout::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ent-sidebar__flyout::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ent-sidebar__flyout::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 3px;
+}
+
+.ent-sidebar__flyout::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.32);
+}
+
+.ent-sidebar__flyout-label {
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: capitalize;
+  letter-spacing: 0.03em;
+  color: rgba(255, 255, 255, 0.8);
+  padding: 4px 10px 8px;
+}
+
+.ent-sidebar__flyout .ent-sidebar__link {
+  border-radius: var(--radius-sm);
+  white-space: normal;
+}
+
+.ent-sidebar__logo {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius);
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.ent-sidebar__logo-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.ent-sidebar__logo-mark {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: -0.02em;
+}
+
+.ent-sidebar__name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--sidebar-text-active);
+  line-height: 1.2;
+}
+
+.ent-sidebar__tag {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: capitalize;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 2px;
+}
+
+.ent-sidebar__collapse {
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--sidebar-text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ent-sidebar__collapse:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+/* Close button shown only inside the mobile drawer — hidden on desktop. */
+.ent-sidebar__mobile-close {
+  display: none;
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--sidebar-text);
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ent-sidebar__mobile-close:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+/* Hamburger toggle shown only in the topbar on mobile — hidden on desktop. */
+.ent-topbar__hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text-secondary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.ent-topbar__hamburger:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.ent-mobile-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  z-index: 250;
+}
+
+.ent-sidebar__nav {
+  flex: 1;
+  padding: 0 8px;
+  overflow-y: auto;
+}
+
+.ent-sidebar__section {
+  margin-bottom: 20px;
+}
+
+/* Divider between one module (section) and the next — every section except
+   the first gets a top border, so each module's own item list is bounded by
+   a line above and below (the next section's line, or the sidebar footer
+   for the last one). Applies in both expanded and collapsed-rail mode, since
+   both render inside the same .ent-sidebar__section wrapper (2026-08-31 /pm
+   follow-up — "before and after of the main module navigation"). */
+.ent-sidebar__section:not(:first-child) {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 14px;
+}
+
+.ent-sidebar__section-label {
+  /* Was 10px / 40% white — read as barely-there against the dark navy
+     background (user-reported, matches the same low-contrast pattern the
+     nav links themselves had). Bumped repeatedly per follow-up feedback,
+     now sized above the 15px nav-link text itself since a group header
+     reading larger than its own items is a normal, expected hierarchy.
+     Stays dimmer/lighter-weight than the fully-white --active variant
+     below so that distinction still holds. Tighter letter-spacing at this
+     larger size reads as sharper/denser rather than loose caps-lock
+     spacing. */
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: capitalize;
+  letter-spacing: 0.03em;
+  color: rgba(255, 255, 255, 0.8);
+  transition: color var(--transition);
+}
+
+/* "You're in this general area" — lighter-weight signal than the individual
+   active link's full pill highlight (no background, just brighter text),
+   shown whenever the current route belongs to this section, regardless of
+   whether the section is expanded/collapsed or the sidebar is in icon-rail
+   mode (see project_sidebar_nav_ui memory for how these stay independent). */
+.ent-sidebar__section-label--active {
+  color: #ffffff;
+  font-weight: 800;
+}
+
+/* Accordion header — same visual spacing as the plain label above, but
+   clickable, with a chevron showing this section's open/closed state.
+   Independent of the whole-sidebar icon-rail collapse. */
+.ent-sidebar__section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 12px 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  /* Matches .ent-sidebar__section-label's own color above — this is what
+     the chevron icon inherits via currentColor, so it was just as faint. */
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.ent-sidebar__section-header:hover {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.ent-sidebar__section-header:hover .ent-sidebar__section-label {
+  color: inherit;
+}
+
+.ent-sidebar__section-header svg {
+  flex-shrink: 0;
+}
+
+/* Plain (non-interactive) label shown instead of the header while a search
+   is active — matched sections auto-expand, so toggling would be moot. */
+.ent-sidebar__section > .ent-sidebar__section-label {
+  display: block;
+  padding: 0 12px 6px;
+}
+
+.ent-sidebar__link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  /* min-height (not a fixed height) + real vertical padding + line-height —
+     long labels ("Assets Health Status Updation") wrap to 2 lines, and a
+     fixed 36px/0-padding row squeezed that second line against the row
+     below it, reading as visually "congested" (user-reported 2026-08-31,
+     screenshot of the expanded Assets section). Padding lets 2-line items
+     grow instead of clipping their own breathing room. */
+  min-height: 36px;
+  padding: 7px 12px;
+  margin-bottom: 4px;
+  color: var(--sidebar-text);
+  /* A touch larger than --font-size-base (13px) and medium-weight rather
+     than regular — both make a real, visible difference on the dark
+     sidebar background without the labels feeling oversized next to the
+     rest of the app's 13px baseline. */
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.25;
+  transition:
+    background var(--transition),
+    color var(--transition);
+}
+
+/* Reports section items render as <button>, not <NavLink> (they open a
+   modal instead of navigating) — reset native button chrome so they're
+   visually identical to every routed .ent-sidebar__link anchor. */
+button.ent-sidebar__link {
+  width: 100%;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* Divider between every nav item within a section (renderSectionItems in
+   AppShell.jsx — after every item except the last one in the list), in both
+   the expanded accordion and the collapsed-rail flyout. Originally a sparse,
+   curated grouping cue for just Assets/Master; widened to every item in
+   every section per explicit follow-up ask (2026-08-31 /pm) — the "keep it
+   sparse" recommendation was overridden on purpose, not an oversight. */
+.ent-sidebar__divider {
+  height: 1px;
+  margin: 4px 12px 8px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.ent-sidebar__link-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.ent-sidebar__link:hover {
+  color: var(--sidebar-text-active);
+  background: rgba(163, 201, 255, 0.12);
+}
+
+/* High-contrast "you are here" state — the previous #93baf1-on-var(--primary)
+   combo was too close in tone to the sidebar's own dark-navy background to
+   read as clearly active (user feedback 2026-07-30). White, bold text on a
+   distinctly brighter/more saturated blue than the sidebar gradient. */
+.ent-sidebar__link--active {
+  color: #ffffff;
+  font-weight: 600;
+  background: linear-gradient(90deg, #2f6fdb 0%, #1e56b3 100%);
+  border-left: 3px solid #7fb2ff;
+  padding-left: 9px;
+  box-shadow: 0 2px 10px rgba(47, 111, 219, 0.45);
+}
+
+.ent-sidebar__link--active .ent-sidebar__link-icon {
+  opacity: 1;
+  color: #ffffff;
+}
+
+.ent-shell--collapsed .ent-sidebar__link {
+  justify-content: center;
+  padding: 0;
+  border-left: none;
+}
+
+.ent-shell--collapsed .ent-sidebar__link--active {
+  border-left: none;
+  box-shadow: none;
+}
+
+/* Collapsed rail — one icon per SECTION (not per item). Hovering it opens
+   the .ent-sidebar__flyout with the section's full item list. */
+.ent-sidebar__rail-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  margin-bottom: 4px;
+  color: var(--sidebar-text);
+  opacity: 0.85;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.ent-sidebar__rail-icon:hover {
+  color: var(--sidebar-text-active);
+  background: rgba(163, 201, 255, 0.12);
+  opacity: 1;
+}
+
+.ent-sidebar__rail-icon--active {
+  color: #ffffff;
+  opacity: 1;
+  background: linear-gradient(90deg, #2f6fdb 0%, #1e56b3 100%);
+  box-shadow: 0 2px 10px rgba(47, 111, 219, 0.45);
+}
+
+.ent-sidebar__footer {
+  padding: 12px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ent-sidebar__version {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.ent-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.ent-topbar {
+  height: var(--topbar-height);
+  flex-shrink: 0;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-dark);
+  z-index: 50;
+}
+
+.ent-topbar__left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  flex: 1;
+}
+
+.ent-topbar__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-tint);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.ent-topbar__back:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.ent-topbar__titles {
+  min-width: 0;
+  flex-shrink: 0;
+}
+
+.ent-topbar__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1.2;
+}
+
+.ent-topbar__subtitle {
+  margin: 2px 0 0;
+  font-size: 10px;
+  color: var(--text-secondary);
+  line-height: 1;
+}
+
+.ent-topbar__search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 28px;
+  padding: 0 12px 0 32px;
+  background: var(--bg-tint);
+  border: 1px solid var(--border-dark);
+  border-radius: 999px;
+  color: var(--text-muted);
+  position: relative;
+  margin-left: 8px;
+  min-width: 200px;
+}
+
+.ent-topbar__search svg {
+  position: absolute;
+  left: 10px;
+}
+
+.ent-topbar__search input {
+  border: none;
+  background: transparent;
+  outline: none;
+  color: var(--text);
+  font-size: 12px;
+  width: 100%;
+}
+
+.ent-topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── Env switcher — segmented pill showing both options ── */
+.ent-env-switcher {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--border-dark);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--bg-tint);
+}
+
+.ent-env-switcher__btn {
+  padding: 3px 10px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: capitalize;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background 0.15s,
+    color 0.15s;
+  border-right: 1px solid var(--border-dark);
+}
+
+.ent-env-switcher__btn:last-child {
+  border-right: none;
+}
+
+.ent-env-switcher__btn:hover:not(.ent-env-switcher__btn--active) {
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* IMS_LIVE active */
+.ent-env-switcher__btn--active {
+  background: var(--primary-light, #e8f0fe);
+  color: var(--primary, #1a56db);
+  cursor: default;
+}
+
+/* IMS_PGLIVE active — amber */
+.ent-env-switcher__btn--pg.ent-env-switcher__btn--active {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+/* IMS_PGLIVE inactive hover */
+.ent-env-switcher__btn--pg:hover:not(.ent-env-switcher__btn--active) {
+  background: #fffbeb;
+  color: #b45309;
+}
+
+/* Legacy single badge — kept for fallback but replaced by ent-env-switcher */
+.ent-topbar__env-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: capitalize;
+  background: var(--primary-light, #e8f0fe);
+  color: var(--primary, #1a56db);
+  border: 1px solid var(--primary-border, #c7d7f7);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.ent-topbar__env-badge--btn {
+  cursor: pointer;
+  transition:
+    opacity 0.15s,
+    box-shadow 0.15s;
+}
+
+.ent-topbar__env-badge--btn:hover {
+  opacity: 0.8;
+  box-shadow: 0 0 0 2px var(--primary-border, #c7d7f7);
+}
+
+.ent-topbar__env-badge--pg {
+  background: #fef3c7;
+  color: #92400e;
+  border-color: #fde68a;
+}
+
+.ent-topbar__env-badge--pg.ent-topbar__env-badge--btn:hover {
+  box-shadow: 0 0 0 2px #fde68a;
+}
+
+.ent-topbar__icon-btn {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ent-topbar__icon-btn:hover {
+  background: var(--bg-tint);
+  color: var(--primary);
+}
+
+.ent-topbar__badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  border-radius: 999px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 8px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ent-topbar__divider {
+  width: 1px;
+  height: 24px;
+  background: var(--border-dark);
+  margin: 0 4px;
+}
+
+/* Auto-logout countdown — visible always so a session expiring never comes
+   as a surprise; switches to a warning color in the last 2 minutes. */
+.ent-autologout-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 26px;
+  padding: 0 9px;
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text-secondary, #64748b);
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.ent-autologout-timer--warning {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.ent-topbar__profile-menu {
+  position: relative;
+}
+
+.ent-topbar__profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px 4px 4px;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+}
+
+.ent-topbar__profile-menu:hover .ent-topbar__profile {
+  background: var(--bg-tint);
+}
+
+.ent-topbar__profile-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  padding-top: 6px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(4px);
+  transition:
+    opacity var(--transition),
+    transform var(--transition),
+    visibility var(--transition);
+  z-index: 120;
+}
+
+.ent-topbar__profile-menu:hover .ent-topbar__profile-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.ent-topbar__profile-dropdown-panel {
+  min-width: 200px;
+  padding: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.ent-topbar__profile-dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px 10px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 6px;
+}
+
+.ent-topbar__profile-dropdown-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1.2;
+}
+
+.ent-topbar__profile-dropdown-id {
+  margin-top: 2px;
+  font-size: 10px;
+  color: var(--text-secondary);
+  line-height: 1.2;
+}
+
+.ent-topbar__avatar--dropdown {
+  width: 32px;
+  height: 32px;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.ent-topbar__profile-dropdown-changepwd,
+.ent-topbar__profile-dropdown-logout {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+}
+
+.ent-topbar__profile-dropdown-changepwd:hover {
+  background: var(--bg-tint);
+  color: var(--primary);
+}
+
+.ent-topbar__profile-dropdown-logout:hover {
+  background: rgba(220, 53, 69, 0.08);
+  color: var(--danger);
+}
+
+.ent-topbar__profile-text {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+}
+
+.ent-topbar__profile-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1.1;
+}
+
+.ent-topbar__profile-role {
+  font-size: 10px;
+  color: var(--text-secondary);
+  line-height: 1.1;
+}
+
+.ent-topbar__avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(30, 74, 122, 0.2);
+}
+
+.ent-content {
+  flex: 1;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Workspace pages fill the content pane; scroll stays in ent-content if filters overflow */
+.ent-content:has(.workspace-page--fill) {
+  overflow: hidden;
+}
+
+/* Dashboard fills viewport; internal panels scroll */
+.ent-content:has(.ent-dashboard--fill) {
+  overflow: hidden;
+}
+
+@media (max-width: 1024px) {
+  .ent-content:has(.ent-dashboard--fill) {
+    overflow: auto;
+  }
+}
+
+@media (max-width: 1100px) {
+  .ent-topbar__search {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .ent-topbar__profile-text {
+    display: none;
+  }
+
+  /* ── Mobile nav drawer ──────────────────────────────────────────────
+     Below tablet width the sidebar leaves the flex flow and becomes an
+     off-canvas drawer toggled by the topbar hamburger, instead of the
+     permanent icon-rail "collapsed" mode used on desktop/tablet. */
+  .ent-topbar__hamburger {
+    display: inline-flex;
+  }
+
+  .ent-sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: var(--sidebar-width);
+    transform: translateX(-100%);
+    transition: transform var(--transition);
+    z-index: 300;
+  }
+
+  .ent-shell--mobile-nav-open .ent-sidebar {
+    transform: translateX(0);
+    box-shadow: 0 0 32px rgba(0, 0, 0, 0.35);
+  }
+
+  /* Desktop icon-rail collapse doesn't apply to an off-canvas drawer —
+     it's either fully open (labeled) or fully hidden. */
+  .ent-shell--collapsed .ent-sidebar {
+    width: var(--sidebar-width);
+  }
+
+  .ent-sidebar__collapse {
+    display: none;
+  }
+
+  .ent-sidebar__mobile-close {
+    display: flex;
+  }
+}
+
+@media (max-width: 480px) {
+  .ent-topbar__titles {
+    max-width: 55vw;
+    overflow: hidden;
+  }
+
+  .ent-topbar__title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ent-topbar__back span {
+    display: none;
+  }
+}
