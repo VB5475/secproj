@@ -6,6 +6,8 @@ import VendorLoginPage from "./pages/login/VendorLoginPage";
 import ConsumerLoginPage from "./pages/login/ConsumerLoginPage";
 import DashboardPage from "./pages/dashboard/DashboardPage";
 import PlaceholderPage from "./pages/dashboard/PlaceholderPage";
+import LocationMasterListPage from "./pages/location-master/LocationMasterListPage";
+import LocationMasterFormPage from "./pages/location-master/LocationMasterFormPage";
 
 function WorkspaceLayout({ title = "Dashboard", subtitle = "FY 2025-26" }) {
   return (
@@ -29,6 +31,9 @@ export default function App() {
           element={<WorkspaceLayout title="Dashboard" subtitle="FY 2025-26 · Demo" />}
         >
           <Route index element={<DashboardPage />} />
+          <Route path="location" element={<LocationMasterListPage />} />
+          <Route path="location/add" element={<LocationMasterFormPage mode="add" />} />
+          <Route path="location/edit" element={<LocationMasterFormPage mode="edit" />} />
           <Route path="*" element={<PlaceholderPage />} />
         </Route>
 
